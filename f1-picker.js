@@ -349,14 +349,17 @@ function getColoredDriverName(driverId, position, results) {
     return `<span style="color: ${color}">${driverName}</span>`;
 }
 
-// Update the submission board to show points
+// Update the submission board to show points and results
 async function updateSubmissionBoard() {
     const tbody = document.querySelector('#submissions-table tbody');
+    const resultsDiv = document.querySelector('#race-results');
+    const resultsSection = document.querySelector('.results-section');
     const selectedRace = document.getElementById('board-race-select').value;
     
     try {
         // Show loading state
         tbody.innerHTML = '<tr><td colspan="5" class="board-loading">Loading...</td></tr>';
+        resultsDiv.innerHTML = '<div class="board-loading">Loading...</div>';
 
         // Get picks for the selected race
         const picksRef = ref(db, 'picks');
@@ -367,6 +370,30 @@ async function updateSubmissionBoard() {
         const resultsRef = ref(db, 'results');
         const resultsSnapshot = await get(resultsRef);
         const results = resultsSnapshot.val() || {};
+
+        // Display race results if available
+        if (results[selectedRace]) {
+            const raceResults = results[selectedRace];
+            resultsSection.style.display = 'block';
+            resultsDiv.innerHTML = `
+                <div class="results-grid">
+                    <div class="result-item">
+                        <span class="position">1st</span>
+                        <span class="driver">${getDriverName(raceResults.first)}</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="position">2nd</span>
+                        <span class="driver">${getDriverName(raceResults.second)}</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="position">3rd</span>
+                        <span class="driver">${getDriverName(raceResults.third)}</span>
+                    </div>
+                </div>
+            `;
+        } else {
+            resultsSection.style.display = 'none';
+        }
 
         // Filter picks for the selected race
         const racePicks = Object.entries(picks)
@@ -400,6 +427,7 @@ async function updateSubmissionBoard() {
     } catch (error) {
         console.error('Error updating submission board:', error);
         tbody.innerHTML = '<tr><td colspan="5" class="error">Error loading picks. Please try again.</td></tr>';
+        resultsSection.style.display = 'none';
     }
 }
 
