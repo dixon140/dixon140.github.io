@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>F1 Picker - Admin Dashboard</title>
+        <link rel="stylesheet" href="f1-picker.css">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body>
+        <div class="admin-dashboard">
+            <header>
+                <h1>F1 Picker Admin Dashboard</h1>
+                <button id="logout-button">Logout</button>
+            </header>
+
+            <div class="admin-content">
+                <section class="results-section">
+                    <h2>Race Results</h2>
+                    <div class="form-group">
+                        <label for="admin-race-select">Select Race:</label>
+                        <select id="admin-race-select"></select>
+                    </div>
+                    <div class="form-group">
+                        <label for="admin-first-place">1st Place:</label>
+                        <select id="admin-first-place"></select>
+                    </div>
+                    <div class="form-group">
+                        <label for="admin-second-place">2nd Place:</label>
+                        <select id="admin-second-place"></select>
+                    </div>
+                    <div class="form-group">
+                        <label for="admin-third-place">3rd Place:</label>
+                        <select id="admin-third-place"></select>
+                    </div>
+                    <button id="save-results">Save Results</button>
+                </section>
+
+                <section class="submissions-section">
+                    <h2>User Submissions</h2>
+                    <div id="submissions-list"></div>
+                </section>
+            </div>
+        </div>
+        <script type="module">
+            // Import the functions you need from the SDKs you need
+            import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
+            import { getFirestore, doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-firestore.js";
+            import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js";
+            import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-analytics.js";
+
+            // Your web app's Firebase configuration
+            const firebaseConfig = {
+                apiKey: "AIzaSyAx1MMgohoUKntAfcBQa6TiBzauCRLSzJc",
+                authDomain: "f1-podium.firebaseapp.com",
+                projectId: "f1-podium",
+                storageBucket: "f1-podium.firebasestorage.app",
+                messagingSenderId: "435127757273",
+                appId: "1:435127757273:web:e94e296086c476fc13d1c8",
+                measurementId: "G-BEC5SYS6K3"
+            };
+
+            // Initialize Firebase
+            const app = initializeApp(firebaseConfig);
+            const analytics = getAnalytics(app);
+            const db = getFirestore(app);
+            const auth = getAuth(app);
+
+            // Make Firebase services available globally
+            window.db = db;
+            window.auth = auth;
+            window.doc = doc;
+            window.getDoc = getDoc;
+            window.setDoc = setDoc;
+            window.serverTimestamp = serverTimestamp;
+            window.onAuthStateChanged = onAuthStateChanged;
+            window.signOut = signOut;
+        </script>
+        <script src="admin-dashboard.js"></script>
+    </body>
+</html> 

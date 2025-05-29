@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>F1 Picker - Admin Login</title>
+        <link rel="stylesheet" href="f1-picker.css">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body>
+        <div>
+            <h1>F1 Picker Admin</h1>
+            <nav>
+                <a href="index.html">Back to Home</a>
+            </nav>
+            <hr>
+            <div class="standings">
+                <div class="admin-form">
+                    <h2>Admin Login</h2>
+                    <form id="login-form">
+                        <div class="form-group">
+                            <label for="username">Username:</label>
+                            <input type="text" id="username" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="password">Password:</label>
+                            <input type="password" id="password" required>
+                        </div>
+                        <button type="submit">Login</button>
+                    </form>
+                    <p id="error-message" class="error-message"></p>
+                </div>
+            </div>
+        </div>
+        <script type="module">
+            // Import the functions you need from the SDKs you need
+            import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
+            import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js";
+            import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-analytics.js";
+
+            // Your web app's Firebase configuration
+            const firebaseConfig = {
+                apiKey: "AIzaSyAx1MMgohoUKntAfcBQa6TiBzauCRLSzJc",
+                authDomain: "f1-podium.firebaseapp.com",
+                projectId: "f1-podium",
+                storageBucket: "f1-podium.firebasestorage.app",
+                messagingSenderId: "435127757273",
+                appId: "1:435127757273:web:e94e296086c476fc13d1c8",
+                measurementId: "G-BEC5SYS6K3"
+            };
+
+            // Initialize Firebase
+            const app = initializeApp(firebaseConfig);
+            const analytics = getAnalytics(app);
+            const auth = getAuth(app);
+
+            // Make auth available globally
+            window.auth = auth;
+            window.signInWithEmailAndPassword = signInWithEmailAndPassword;
+
+            document.getElementById('login-form').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const username = document.getElementById('username').value;
+                const password = document.getElementById('password').value;
+                const errorMessage = document.getElementById('error-message');
+
+                try {
+                    await signInWithEmailAndPassword(auth, username, password);
+                    window.location.href = 'admin-dashboard.html';
+                } catch (error) {
+                    errorMessage.textContent = 'Invalid credentials. Please try again.';
+                    console.error('Login error:', error);
+                }
+            });
+        </script>
+    </body>
+</html> 
