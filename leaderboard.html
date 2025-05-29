@@ -43,9 +43,17 @@
                         </table>
                     </div>
 
-                    <div class="race-results">
+                    <div class="leaderboard-section">
                         <h2>Race Results</h2>
-                        <table id="race-table">
+                        <div class="leaderboard-controls">
+                            <select id="race-select">
+                                <!-- Will be populated by JavaScript -->
+                            </select>
+                            <button id="refresh-board" class="refresh-btn">
+                                <i class="fas fa-sync-alt"></i> Refresh
+                            </button>
+                        </div>
+                        <table id="results-table">
                             <thead>
                                 <tr>
                                     <th>Race</th>
@@ -55,7 +63,28 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <!-- Populated by JavaScript -->
+                                <!-- Will be populated by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="leaderboard-section">
+                        <h2>Actual Race Results</h2>
+                        <div class="leaderboard-controls">
+                            <select id="actual-race-select">
+                                <!-- Will be populated by JavaScript -->
+                            </select>
+                        </div>
+                        <table id="actual-results-table">
+                            <thead>
+                                <tr>
+                                    <th>Position</th>
+                                    <th>Driver</th>
+                                    <th>Team</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Will be populated by JavaScript -->
                             </tbody>
                         </table>
                     </div>
@@ -63,6 +92,6 @@
             </div>
         </div>
 
-        <script src="leaderboard.js"></script>
+        <script type="module" src="leaderboard.js"></script>
     </body>
 </html> 

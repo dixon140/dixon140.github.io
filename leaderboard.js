@@ -1,3 +1,16 @@
+// Import Firebase functions
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+// Firebase configuration
+const firebaseConfig = {
+    databaseURL: "https://f1-picker-2024-default-rtdb.firebaseio.com"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
 // F1 2024 Season Data
 const F1_2024_RACES = [
     { id: 'bahrain', name: 'Bahrain Grand Prix', date: '2024-03-02' },
@@ -59,7 +72,9 @@ const POINTS = {
 // Initialize the page
 document.addEventListener('DOMContentLoaded', () => {
     populateRaceSelect();
+    populateActualRaceSelect();
     updateLeaderboard();
+    updateActualResults();
     setupEventListeners();
 });
 
@@ -71,6 +86,17 @@ function populateRaceSelect() {
         option.value = race.id;
         option.textContent = race.name;
         raceSelect.appendChild(option);
+    });
+}
+
+// Populate actual race select
+function populateActualRaceSelect() {
+    const actualRaceSelect = document.getElementById('actual-race-select');
+    F1_2024_RACES.forEach(race => {
+        const option = document.createElement('option');
+        option.value = race.id;
+        option.textContent = race.name;
+        actualRaceSelect.appendChild(option);
     });
 }
 
@@ -186,7 +212,60 @@ function updateLeaderboard() {
     });
 }
 
+// Update actual race results
+async function updateActualResults() {
+    const actualRaceSelect = document.getElementById('actual-race-select');
+    const selectedRace = actualRaceSelect.value;
+    const tbody = document.querySelector('#actual-results-table tbody');
+    
+    try {
+        // Show loading state
+        tbody.innerHTML = '<tr><td colspan="3" class="board-loading"></td></tr>';
+
+        // Get actual results for the selected race
+        const resultsRef = ref(db, `results/${selectedRace}`);
+        const resultsSnapshot = await get(resultsRef);
+        const results = resultsSnapshot.val();
+
+        // Clear existing rows
+        tbody.innerHTML = '';
+
+        if (!results) {
+            const row = document.createElement('tr');
+            row.innerHTML = '<td colspan="3" class="empty-state">No results available for this race yet</td>';
+            tbody.appendChild(row);
+            return;
+        }
+
+        // Add rows for each position
+        const positions = [
+            { pos: '1st', driver: results.first },
+            { pos: '2nd', driver: results.second },
+            { pos: '3rd', driver: results.third }
+        ];
+
+        positions.forEach(({ pos, driver }) => {
+            const driverInfo = F1_2024_DRIVERS.find(d => d.id === driver);
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${pos}</td>
+                <td>${driverInfo ? driverInfo.name : driver}</td>
+                <td>${driverInfo ? driverInfo.team : ''}</td>
+            `;
+            tbody.appendChild(row);
+        });
+    } catch (error) {
+        console.error('Error updating actual results:', error);
+        tbody.innerHTML = '<tr><td colspan="3" class="error">Error loading results. Please try again.</td></tr>';
+    }
+}
+
 // Setup event listeners
 function setupEventListeners() {
     document.getElementById('leaderboard-race-select').addEventListener('change', updateLeaderboard);
+    document.getElementById('actual-race-select').addEventListener('change', updateActualResults);
+    document.getElementById('refresh-board').addEventListener('click', () => {
+        updateLeaderboard();
+        updateActualResults();
+    });
 } 

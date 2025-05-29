@@ -184,7 +184,60 @@ async function savePicks() {
     }
 }
 
-// Update submission board
+// Calculate points for a user's picks
+async function calculatePoints(raceId, name) {
+    try {
+        // Get the actual results
+        const resultsRef = ref(db, `results/${raceId}`);
+        const resultsSnapshot = await get(resultsRef);
+        const results = resultsSnapshot.val();
+
+        if (!results) {
+            console.log('No results found for this race');
+            return 0;
+        }
+
+        // Get the user's picks
+        const picksRef = ref(db, `picks/${raceId}_${name}`);
+        const picksSnapshot = await get(picksRef);
+        const picks = picksSnapshot.val();
+
+        if (!picks) {
+            console.log('No picks found for this user');
+            return 0;
+        }
+
+        let points = 0;
+
+        // Check first place
+        if (picks.first === results.first) {
+            points += 3; // Correct position
+        } else if (picks.first === results.second || picks.first === results.third) {
+            points += 1; // Correct podium, wrong position
+        }
+
+        // Check second place
+        if (picks.second === results.second) {
+            points += 3; // Correct position
+        } else if (picks.second === results.first || picks.second === results.third) {
+            points += 1; // Correct podium, wrong position
+        }
+
+        // Check third place
+        if (picks.third === results.third) {
+            points += 3; // Correct position
+        } else if (picks.third === results.first || picks.third === results.second) {
+            points += 1; // Correct podium, wrong position
+        }
+
+        return points;
+    } catch (error) {
+        console.error('Error calculating points:', error);
+        return 0;
+    }
+}
+
+// Update the submission board to show points
 async function updateSubmissionBoard() {
     const boardRaceSelect = document.getElementById('board-race-select');
     const selectedRace = boardRaceSelect.value;
@@ -192,7 +245,7 @@ async function updateSubmissionBoard() {
     
     try {
         // Show loading state
-        tbody.innerHTML = '<tr><td colspan="4" class="board-loading"></td></tr>';
+        tbody.innerHTML = '<tr><td colspan="5" class="board-loading"></td></tr>';
 
         // Get picks for the selected race
         const picksRef = ref(db, 'picks');
@@ -212,25 +265,27 @@ async function updateSubmissionBoard() {
 
         if (racePicks.length === 0) {
             const row = document.createElement('tr');
-            row.innerHTML = '<td colspan="4" class="empty-state">No picks submitted for this race yet</td>';
+            row.innerHTML = '<td colspan="5" class="empty-state">No picks submitted for this race yet</td>';
             tbody.appendChild(row);
             return;
         }
 
-        // Add rows for each submission
-        racePicks.forEach(({ name, picks }) => {
+        // Add rows for each submission with points
+        for (const { name, picks } of racePicks) {
+            const points = await calculatePoints(selectedRace, name);
             const row = document.createElement('tr');
             row.innerHTML = `
                 <td>${name}</td>
                 <td>${getDriverName(picks[0])}</td>
                 <td>${getDriverName(picks[1])}</td>
                 <td>${getDriverName(picks[2])}</td>
+                <td>${points} pts</td>
             `;
             tbody.appendChild(row);
-        });
+        }
     } catch (error) {
         console.error('Error updating submission board:', error);
-        tbody.innerHTML = '<tr><td colspan="4" class="error">Error loading picks. Please try again.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="5" class="error">Error loading picks. Please try again.</td></tr>';
     }
 }
 
@@ -247,25 +302,4 @@ function setupEventListeners() {
 function displayStandings() {
     // This will be implemented to show the leaderboard
     // We'll need to store results and calculate points for each user
-}
-
-// Save race results
-async function saveRaceResults(raceId, firstPlace, secondPlace, thirdPlace) {
-    try {
-        const resultsRef = ref(db, `results/${raceId}`);
-        await set(resultsRef, {
-            first: firstPlace,
-            second: secondPlace,
-            third: thirdPlace,
-            timestamp: serverTimestamp()
-        });
-        console.log('Race results saved successfully');
-    } catch (error) {
-        console.error('Error saving race results:', error);
-        throw error;
-    }
-}
-
-// Example usage:
-// To save Bahrain results:
-// saveRaceResults('bahrain', 'VER', 'PER', 'HAM'); 
+} 
