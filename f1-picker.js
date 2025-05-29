@@ -51,10 +51,119 @@ const F1_2024_DRIVERS = [
 
 // Points system
 const POINTS = {
-    correctPosition: 3,    // Points for correct position
+    correctPosition: 2,    // Points for correct position
     correctPodium: 1,      // Points for correct driver in wrong position
-    perfectPodium: 5       // Bonus points for perfect podium prediction
+    perfectPodium: 0       // Bonus points for perfect podium prediction
 };
+
+// Calculate points for a race
+function calculatePoints(picks, results) {
+    if (!picks || !results) return 0;
+    
+    let points = 0;
+    let correctPositions = 0;
+
+    // Check first place
+    if (picks.first === results.first) {
+        points += POINTS.correctPosition;
+        correctPositions++;
+    } else if (picks.first === results.second || picks.first === results.third) {
+        points += POINTS.correctPodium;
+    }
+
+    // Check second place
+    if (picks.second === results.second) {
+        points += POINTS.correctPosition;
+        correctPositions++;
+    } else if (picks.second === results.first || picks.second === results.third) {
+        points += POINTS.correctPodium;
+    }
+
+    // Check third place
+    if (picks.third === results.third) {
+        points += POINTS.correctPosition;
+        correctPositions++;
+    } else if (picks.third === results.first || picks.third === results.second) {
+        points += POINTS.correctPodium;
+    }
+
+    // Add bonus for perfect podium
+    if (correctPositions === 3) {
+        points += POINTS.perfectPodium;
+    }
+
+    return points;
+}
+
+// Update season points
+async function updateSeasonPoints() {
+    const tbody = document.querySelector('#season-points-table tbody');
+    
+    try {
+        // Show loading state
+        tbody.innerHTML = '<tr><td colspan="4" class="board-loading">Loading...</td></tr>';
+
+        // Get all picks
+        const picksRef = ref(db, 'picks');
+        const picksSnapshot = await get(picksRef);
+        const picks = picksSnapshot.val() || {};
+
+        // Get all results
+        const resultsRef = ref(db, 'results');
+        const resultsSnapshot = await get(resultsRef);
+        const results = resultsSnapshot.val() || {};
+
+        // Calculate totals for each player
+        const totals = {
+            Calvin: { points: 0, perfectPodiums: 0 },
+            Ethan: { points: 0, perfectPodiums: 0 }
+        };
+
+        // Calculate points for each race
+        Object.entries(picks).forEach(([key, pick]) => {
+            const [raceId, name] = key.split('_');
+            const raceResults = results[raceId];
+            
+            if (!raceResults) return;
+
+            const points = calculatePoints(pick, raceResults);
+            totals[name].points += points;
+
+            // Check for perfect podium (9 points for positions + 5 bonus)
+            if (points >= POINTS.correctPosition * 3 + POINTS.perfectPodium) {
+                totals[name].perfectPodiums++;
+            }
+        });
+
+        // Sort by points
+        const sortedTotals = Object.entries(totals)
+            .map(([name, data]) => ({ name, ...data }))
+            .sort((a, b) => b.points - a.points);
+
+        // Clear and update table
+        tbody.innerHTML = '';
+
+        // Add rows to table
+        sortedTotals.forEach((data, index) => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${index + 1}</td>
+                <td>${data.name}</td>
+                <td>${data.points}</td>
+                <td>${data.perfectPodiums}</td>
+            `;
+            tbody.appendChild(row);
+        });
+
+        // If no data was found, show a message
+        if (Object.keys(picks).length === 0 || Object.keys(results).length === 0) {
+            tbody.innerHTML = '<tr><td colspan="4" class="empty-state">No data available yet</td></tr>';
+        }
+    } catch (error) {
+        console.error('Error updating season points:', error);
+        tbody.innerHTML = '<tr><td colspan="4" class="error">Error loading season points. Please try again.</td></tr>';
+    }
+}
 
 // Initialize the page
 document.addEventListener('DOMContentLoaded', () => {
@@ -63,6 +172,7 @@ document.addEventListener('DOMContentLoaded', () => {
     populateBoardRaceSelect();
     loadUserPicks();
     updateSubmissionBoard();
+    updateSeasonPoints();
     setupEventListeners();
 });
 
@@ -184,68 +294,14 @@ async function savePicks() {
     }
 }
 
-// Calculate points for a user's picks
-async function calculatePoints(raceId, name) {
-    try {
-        // Get the actual results
-        const resultsRef = ref(db, `results/${raceId}`);
-        const resultsSnapshot = await get(resultsRef);
-        const results = resultsSnapshot.val();
-
-        if (!results) {
-            console.log('No results found for this race');
-            return 0;
-        }
-
-        // Get the user's picks
-        const picksRef = ref(db, `picks/${raceId}_${name}`);
-        const picksSnapshot = await get(picksRef);
-        const picks = picksSnapshot.val();
-
-        if (!picks) {
-            console.log('No picks found for this user');
-            return 0;
-        }
-
-        let points = 0;
-
-        // Check first place
-        if (picks.first === results.first) {
-            points += 3; // Correct position
-        } else if (picks.first === results.second || picks.first === results.third) {
-            points += 1; // Correct podium, wrong position
-        }
-
-        // Check second place
-        if (picks.second === results.second) {
-            points += 3; // Correct position
-        } else if (picks.second === results.first || picks.second === results.third) {
-            points += 1; // Correct podium, wrong position
-        }
-
-        // Check third place
-        if (picks.third === results.third) {
-            points += 3; // Correct position
-        } else if (picks.third === results.first || picks.third === results.second) {
-            points += 1; // Correct podium, wrong position
-        }
-
-        return points;
-    } catch (error) {
-        console.error('Error calculating points:', error);
-        return 0;
-    }
-}
-
 // Update the submission board to show points
 async function updateSubmissionBoard() {
-    const boardRaceSelect = document.getElementById('board-race-select');
-    const selectedRace = boardRaceSelect.value;
     const tbody = document.querySelector('#submissions-table tbody');
+    const selectedRace = document.getElementById('board-race-select').value;
     
     try {
         // Show loading state
-        tbody.innerHTML = '<tr><td colspan="5" class="board-loading"></td></tr>';
+        tbody.innerHTML = '<tr><td colspan="4" class="board-loading">Loading...</td></tr>';
 
         // Get picks for the selected race
         const picksRef = ref(db, 'picks');
@@ -257,35 +313,31 @@ async function updateSubmissionBoard() {
             .filter(([key]) => key.startsWith(selectedRace + '_'))
             .map(([key, pick]) => ({
                 name: pick.name,
-                picks: [pick.first, pick.second, pick.third]
+                picks: pick
             }));
 
-        // Clear existing rows
+        // Clear and update table
         tbody.innerHTML = '';
 
-        if (racePicks.length === 0) {
-            const row = document.createElement('tr');
-            row.innerHTML = '<td colspan="5" class="empty-state">No picks submitted for this race yet</td>';
-            tbody.appendChild(row);
-            return;
-        }
-
-        // Add rows for each submission with points
+        // Add rows for each submission
         for (const { name, picks } of racePicks) {
-            const points = await calculatePoints(selectedRace, name);
             const row = document.createElement('tr');
             row.innerHTML = `
                 <td>${name}</td>
-                <td>${getDriverName(picks[0])}</td>
-                <td>${getDriverName(picks[1])}</td>
-                <td>${getDriverName(picks[2])}</td>
-                <td>${points} pts</td>
+                <td>${getDriverName(picks.first)}</td>
+                <td>${getDriverName(picks.second)}</td>
+                <td>${getDriverName(picks.third)}</td>
             `;
             tbody.appendChild(row);
         }
+
+        // If no picks were found, show a message
+        if (racePicks.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="4" class="empty-state">No picks submitted for this race yet</td></tr>';
+        }
     } catch (error) {
         console.error('Error updating submission board:', error);
-        tbody.innerHTML = '<tr><td colspan="5" class="error">Error loading picks. Please try again.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="4" class="error">Error loading picks. Please try again.</td></tr>';
     }
 }
 
@@ -297,9 +349,3 @@ function setupEventListeners() {
     document.getElementById('board-race-select').addEventListener('change', updateSubmissionBoard);
     document.getElementById('refresh-board').addEventListener('click', updateSubmissionBoard);
 }
-
-// Function to display standings (to be implemented)
-function displayStandings() {
-    // This will be implemented to show the leaderboard
-    // We'll need to store results and calculate points for each user
-} 

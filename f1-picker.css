@@ -436,6 +436,103 @@ nav a:hover {
 
 /* Leaderboard Styles */
 .leaderboard-container {
+    background-color: #1e1e1e;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin: 20px 0;
+}
+
+.leaderboard-content {
+    overflow-x: auto;
+}
+
+#season-points-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+    background-color: #2a2a2a;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+#season-points-table th {
+    background-color: #1e1e1e;
+    color: #ff1e1e;
+    padding: 15px;
+    text-align: left;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.9em;
+    letter-spacing: 0.5px;
+    border-bottom: 2px solid #ff1e1e;
+}
+
+#season-points-table td {
+    padding: 12px 15px;
+    color: #ffffff;
+    border-bottom: 1px solid #3a3a3a;
+}
+
+#season-points-table tr:last-child td {
+    border-bottom: none;
+}
+
+#season-points-table tr:hover {
+    background-color: #333333;
+}
+
+#season-points-table td:first-child {
+    font-weight: bold;
+    color: #ff1e1e;
+    width: 60px;
+}
+
+#season-points-table td:nth-child(3) {
+    font-weight: bold;
+    color: #4CAF50;
+}
+
+#season-points-table td:last-child {
+    color: #FFD700;
+}
+
+.board-loading {
+    text-align: center;
+    padding: 20px;
+    color: #888;
+    font-style: italic;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 20px;
+    color: #888;
+    font-style: italic;
+}
+
+.error {
+    text-align: center;
+    padding: 20px;
+    color: #ff4444;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .leaderboard-container {
+        padding: 15px;
+        margin: 15px 0;
+    }
+
+    #season-points-table th,
+    #season-points-table td {
+        padding: 10px;
+        font-size: 0.9em;
+    }
+}
+
+/* Leaderboard Styles */
+.leaderboard-container {
     background: #1e1e1e;
     border-radius: 12px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
