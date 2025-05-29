@@ -51,7 +51,7 @@ const F1_2024_DRIVERS = [
 
 // Points system
 const POINTS = {
-    correctPosition: 2,    // Points for correct position
+    correctPosition: 3,    // Points for correct position
     correctPodium: 1,      // Points for correct driver in wrong position
     perfectPodium: 0       // Bonus points for perfect podium prediction
 };
