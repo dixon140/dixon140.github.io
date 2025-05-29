@@ -179,11 +179,24 @@ document.addEventListener('DOMContentLoaded', () => {
 // Populate race dropdown
 function populateRaceSelect() {
     const raceSelect = document.getElementById('race-select');
+    const boardRaceSelect = document.getElementById('board-race-select');
+    
+    // Clear existing options
+    raceSelect.innerHTML = '';
+    boardRaceSelect.innerHTML = '';
+    
     F1_2024_RACES.forEach(race => {
+        // Add to main race select
         const option = document.createElement('option');
         option.value = race.id;
         option.textContent = race.name;
         raceSelect.appendChild(option);
+        
+        // Add to board race select
+        const boardOption = document.createElement('option');
+        boardOption.value = race.id;
+        boardOption.textContent = race.name;
+        boardRaceSelect.appendChild(boardOption);
     });
 }
 
@@ -201,8 +214,12 @@ function populateBoardRaceSelect() {
 // Populate driver dropdowns
 function populateDriverSelects() {
     const driverSelects = ['first-place', 'second-place', 'third-place'];
+    
     driverSelects.forEach(selectId => {
         const select = document.getElementById(selectId);
+        // Clear existing options
+        select.innerHTML = '';
+        
         F1_2024_DRIVERS.forEach(driver => {
             const option = document.createElement('option');
             option.value = driver.id;
