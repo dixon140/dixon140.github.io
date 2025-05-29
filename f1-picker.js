@@ -170,6 +170,11 @@ document.addEventListener('DOMContentLoaded', () => {
     populateRaceSelect();
     populateDriverSelects();
     populateBoardRaceSelect();
+    
+    // Set Monaco as default race
+    document.getElementById('race-select').value = 'spain';
+    document.getElementById('board-race-select').value = 'spain';
+    
     loadUserPicks();
     updateSubmissionBoard();
     updateSeasonPoints();
@@ -190,12 +195,18 @@ function populateRaceSelect() {
         const option = document.createElement('option');
         option.value = race.id;
         option.textContent = race.name;
+        if (race.id === 'spain') {
+            option.selected = true;
+        }
         raceSelect.appendChild(option);
         
         // Add to board race select
         const boardOption = document.createElement('option');
         boardOption.value = race.id;
         boardOption.textContent = race.name;
+        if (race.id === 'spain') {
+            boardOption.selected = true;
+        }
         boardRaceSelect.appendChild(boardOption);
     });
 }
@@ -311,6 +322,33 @@ async function savePicks() {
     }
 }
 
+// Helper function to check if a driver is on the podium
+function isOnPodium(driverId, results) {
+    return results && (driverId === results.first || driverId === results.second || driverId === results.third);
+}
+
+// Helper function to get driver name with appropriate color
+function getColoredDriverName(driverId, position, results) {
+    if (!results) return getDriverName(driverId);
+    
+    const driverName = getDriverName(driverId);
+    let color = 'red'; // Default color for not on podium
+    
+    if (isOnPodium(driverId, results)) {
+        if (position === 'first' && driverId === results.first) {
+            color = '#00FF00'; // Bright, vibrant green
+        } else if (position === 'second' && driverId === results.second) {
+            color = '#00FF00'; // Bright, vibrant green
+        } else if (position === 'third' && driverId === results.third) {
+            color = '#00FF00'; // Bright, vibrant green
+        } else {
+            color = '#FFD700'; // Gold color
+        }
+    }
+    
+    return `<span style="color: ${color}">${driverName}</span>`;
+}
+
 // Update the submission board to show points
 async function updateSubmissionBoard() {
     const tbody = document.querySelector('#submissions-table tbody');
@@ -318,12 +356,17 @@ async function updateSubmissionBoard() {
     
     try {
         // Show loading state
-        tbody.innerHTML = '<tr><td colspan="4" class="board-loading">Loading...</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="5" class="board-loading">Loading...</td></tr>';
 
         // Get picks for the selected race
         const picksRef = ref(db, 'picks');
         const picksSnapshot = await get(picksRef);
         const picks = picksSnapshot.val() || {};
+
+        // Get results for the selected race
+        const resultsRef = ref(db, 'results');
+        const resultsSnapshot = await get(resultsRef);
+        const results = resultsSnapshot.val() || {};
 
         // Filter picks for the selected race
         const racePicks = Object.entries(picks)
@@ -336,25 +379,27 @@ async function updateSubmissionBoard() {
         // Clear and update table
         tbody.innerHTML = '';
 
-        // Add rows for each submission
+        // Add rows for each submission with points
         for (const { name, picks } of racePicks) {
+            const points = calculatePoints(picks, results[selectedRace]);
             const row = document.createElement('tr');
             row.innerHTML = `
                 <td>${name}</td>
-                <td>${getDriverName(picks.first)}</td>
-                <td>${getDriverName(picks.second)}</td>
-                <td>${getDriverName(picks.third)}</td>
+                <td>${getColoredDriverName(picks.first, 'first', results[selectedRace])}</td>
+                <td>${getColoredDriverName(picks.second, 'second', results[selectedRace])}</td>
+                <td>${getColoredDriverName(picks.third, 'third', results[selectedRace])}</td>
+                <td>${points} pts</td>
             `;
             tbody.appendChild(row);
         }
 
         // If no picks were found, show a message
         if (racePicks.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="4" class="empty-state">No picks submitted for this race yet</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="5" class="empty-state">No picks submitted for this race yet</td></tr>';
         }
     } catch (error) {
         console.error('Error updating submission board:', error);
-        tbody.innerHTML = '<tr><td colspan="4" class="error">Error loading picks. Please try again.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="5" class="error">Error loading picks. Please try again.</td></tr>';
     }
 }
 
