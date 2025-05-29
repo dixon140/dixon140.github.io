@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>F1 Picker Leaderboard</title>
+        <link rel="stylesheet" href="f1-picker.css">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <!-- Add Font Awesome for icons -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    </head>
+    <body>
+        <div class="standings">
+            <h1><i class="fas fa-trophy"></i> F1 Picker Leaderboard</h1>
+            
+            <nav>
+                <a href="f1-picker.html">Make Picks</a>
+                <a href="leaderboard.html" class="active">Leaderboard</a>
+            </nav>
+
+            <div class="leaderboard-container">
+                <div class="leaderboard-controls">
+                    <select id="leaderboard-race-select" class="form-control">
+                        <option value="all">All Races</option>
+                        <!-- Populated by JavaScript -->
+                    </select>
+                </div>
+
+                <div class="leaderboard-content">
+                    <div class="season-totals">
+                        <h2>Season Totals</h2>
+                        <table id="season-table">
+                            <thead>
+                                <tr>
+                                    <th>Position</th>
+                                    <th>Name</th>
+                                    <th>Total Points</th>
+                                    <th>Perfect Podiums</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Populated by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="race-results">
+                        <h2>Race Results</h2>
+                        <table id="race-table">
+                            <thead>
+                                <tr>
+                                    <th>Race</th>
+                                    <th>Calvin</th>
+                                    <th>Ethan</th>
+                                    <th>Winner</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Populated by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script src="leaderboard.js"></script>
+    </body>
+</html> 

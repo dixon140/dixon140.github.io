@@ -109,18 +109,29 @@ function getDriverName(driverId) {
 }
 
 // Load user's previous picks
-function loadUserPicks() {
-    const savedPicks = JSON.parse(localStorage.getItem('f1Picks')) || {};
+async function loadUserPicks() {
     const currentRace = document.getElementById('race-select').value;
     const currentName = document.getElementById('name-select').value;
     const pickKey = `${currentRace}_${currentName}`;
-    
-    if (savedPicks[pickKey]) {
-        document.getElementById('first-place').value = savedPicks[pickKey][0];
-        document.getElementById('second-place').value = savedPicks[pickKey][1];
-        document.getElementById('third-place').value = savedPicks[pickKey][2];
-    } else {
-        // Reset selects if no picks exist
+
+    try {
+        const picksRef = ref(db, `picks/${pickKey}`);
+        const picksSnapshot = await get(picksRef);
+        const picks = picksSnapshot.val();
+
+        if (picks) {
+            document.getElementById('first-place').value = picks.first;
+            document.getElementById('second-place').value = picks.second;
+            document.getElementById('third-place').value = picks.third;
+        } else {
+            // Reset selects if no picks exist
+            document.getElementById('first-place').value = '';
+            document.getElementById('second-place').value = '';
+            document.getElementById('third-place').value = '';
+        }
+    } catch (error) {
+        console.error('Error loading picks:', error);
+        // Reset selects on error
         document.getElementById('first-place').value = '';
         document.getElementById('second-place').value = '';
         document.getElementById('third-place').value = '';
@@ -128,7 +139,7 @@ function loadUserPicks() {
 }
 
 // Save user's picks
-function savePicks() {
+async function savePicks() {
     const raceId = document.getElementById('race-select').value;
     const name = document.getElementById('name-select').value;
     const firstPlace = document.getElementById('first-place').value;
@@ -146,58 +157,81 @@ function savePicks() {
         return;
     }
 
-    const savedPicks = JSON.parse(localStorage.getItem('f1Picks')) || {};
-    const pickKey = `${raceId}_${name}`;
-    savedPicks[pickKey] = [firstPlace, secondPlace, thirdPlace];
-    localStorage.setItem('f1Picks', JSON.stringify(savedPicks));
-    
-    // Add success animation
-    const submitButton = document.getElementById('submit-picks');
-    submitButton.classList.add('success-animation');
-    setTimeout(() => {
-        submitButton.classList.remove('success-animation');
-    }, 500);
+    try {
+        // Save to Firebase
+        const pickKey = `${raceId}_${name}`;
+        const picksRef = ref(db, `picks/${pickKey}`);
+        await set(picksRef, {
+            name: name,
+            first: firstPlace,
+            second: secondPlace,
+            third: thirdPlace,
+            timestamp: serverTimestamp()
+        });
 
-    // Update the submission board
-    updateSubmissionBoard();
+        // Add success animation
+        const submitButton = document.getElementById('submit-picks');
+        submitButton.classList.add('success-animation');
+        setTimeout(() => {
+            submitButton.classList.remove('success-animation');
+        }, 500);
+
+        // Update the submission board
+        updateSubmissionBoard();
+    } catch (error) {
+        console.error('Error saving picks:', error);
+        alert('Error saving picks. Please try again.');
+    }
 }
 
 // Update submission board
-function updateSubmissionBoard() {
+async function updateSubmissionBoard() {
     const boardRaceSelect = document.getElementById('board-race-select');
     const selectedRace = boardRaceSelect.value;
-    const savedPicks = JSON.parse(localStorage.getItem('f1Picks')) || {};
     const tbody = document.querySelector('#submissions-table tbody');
     
-    // Clear existing rows
-    tbody.innerHTML = '';
-    
-    // Get all picks for the selected race
-    const racePicks = Object.entries(savedPicks)
-        .filter(([key]) => key.startsWith(selectedRace + '_'))
-        .map(([key, picks]) => ({
-            name: key.split('_')[1],
-            picks: picks
-        }));
+    try {
+        // Show loading state
+        tbody.innerHTML = '<tr><td colspan="4" class="board-loading"></td></tr>';
 
-    if (racePicks.length === 0) {
-        const row = document.createElement('tr');
-        row.innerHTML = '<td colspan="4" class="empty-state">No picks submitted for this race yet</td>';
-        tbody.appendChild(row);
-        return;
+        // Get picks for the selected race
+        const picksRef = ref(db, 'picks');
+        const picksSnapshot = await get(picksRef);
+        const picks = picksSnapshot.val() || {};
+
+        // Filter picks for the selected race
+        const racePicks = Object.entries(picks)
+            .filter(([key]) => key.startsWith(selectedRace + '_'))
+            .map(([key, pick]) => ({
+                name: pick.name,
+                picks: [pick.first, pick.second, pick.third]
+            }));
+
+        // Clear existing rows
+        tbody.innerHTML = '';
+
+        if (racePicks.length === 0) {
+            const row = document.createElement('tr');
+            row.innerHTML = '<td colspan="4" class="empty-state">No picks submitted for this race yet</td>';
+            tbody.appendChild(row);
+            return;
+        }
+
+        // Add rows for each submission
+        racePicks.forEach(({ name, picks }) => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${name}</td>
+                <td>${getDriverName(picks[0])}</td>
+                <td>${getDriverName(picks[1])}</td>
+                <td>${getDriverName(picks[2])}</td>
+            `;
+            tbody.appendChild(row);
+        });
+    } catch (error) {
+        console.error('Error updating submission board:', error);
+        tbody.innerHTML = '<tr><td colspan="4" class="error">Error loading picks. Please try again.</td></tr>';
     }
-
-    // Add rows for each submission
-    racePicks.forEach(({ name, picks }) => {
-        const row = document.createElement('tr');
-        row.innerHTML = `
-            <td>${name}</td>
-            <td>${getDriverName(picks[0])}</td>
-            <td>${getDriverName(picks[1])}</td>
-            <td>${getDriverName(picks[2])}</td>
-        `;
-        tbody.appendChild(row);
-    });
 }
 
 // Setup event listeners
@@ -213,4 +247,25 @@ function setupEventListeners() {
 function displayStandings() {
     // This will be implemented to show the leaderboard
     // We'll need to store results and calculate points for each user
-} 
+}
+
+// Save race results
+async function saveRaceResults(raceId, firstPlace, secondPlace, thirdPlace) {
+    try {
+        const resultsRef = ref(db, `results/${raceId}`);
+        await set(resultsRef, {
+            first: firstPlace,
+            second: secondPlace,
+            third: thirdPlace,
+            timestamp: serverTimestamp()
+        });
+        console.log('Race results saved successfully');
+    } catch (error) {
+        console.error('Error saving race results:', error);
+        throw error;
+    }
+}
+
+// Example usage:
+// To save Bahrain results:
+// saveRaceResults('bahrain', 'VER', 'PER', 'HAM'); 
