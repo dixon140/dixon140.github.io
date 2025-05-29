@@ -18,76 +18,20 @@
             </nav>
 
             <div class="leaderboard-container">
-                <div class="leaderboard-controls">
-                    <select id="leaderboard-race-select" class="form-control">
-                        <option value="all">All Races</option>
-                        <!-- Populated by JavaScript -->
-                    </select>
-                </div>
-
                 <div class="leaderboard-content">
-                    <div class="season-totals">
-                        <h2>Season Totals</h2>
-                        <table id="season-table">
-                            <thead>
-                                <tr>
-                                    <th>Position</th>
-                                    <th>Name</th>
-                                    <th>Total Points</th>
-                                    <th>Perfect Podiums</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <!-- Populated by JavaScript -->
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <div class="leaderboard-section">
-                        <h2>Race Results</h2>
-                        <div class="leaderboard-controls">
-                            <select id="race-select">
-                                <!-- Will be populated by JavaScript -->
-                            </select>
-                            <button id="refresh-board" class="refresh-btn">
-                                <i class="fas fa-sync-alt"></i> Refresh
-                            </button>
-                        </div>
-                        <table id="results-table">
-                            <thead>
-                                <tr>
-                                    <th>Race</th>
-                                    <th>Calvin</th>
-                                    <th>Ethan</th>
-                                    <th>Winner</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <!-- Will be populated by JavaScript -->
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <div class="leaderboard-section">
-                        <h2>Actual Race Results</h2>
-                        <div class="leaderboard-controls">
-                            <select id="actual-race-select">
-                                <!-- Will be populated by JavaScript -->
-                            </select>
-                        </div>
-                        <table id="actual-results-table">
-                            <thead>
-                                <tr>
-                                    <th>Position</th>
-                                    <th>Driver</th>
-                                    <th>Team</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <!-- Will be populated by JavaScript -->
-                            </tbody>
-                        </table>
-                    </div>
+                    <table id="leaderboard-table">
+                        <thead>
+                            <tr>
+                                <th>Position</th>
+                                <th>Name</th>
+                                <th>Total Points</th>
+                                <th>Perfect Podiums</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Will be populated by JavaScript -->
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
