@@ -1,171 +1,107 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <title>F1 Picker - Admin Dashboard</title>
-        <link rel="stylesheet" href="f1-picker.css">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <!-- Add Font Awesome for icons -->
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    </head>
-    <body>
-        <div class="admin-dashboard">
-            <header class="admin-header">
-                <div class="header-content">
-                    <h1><i class="fas fa-flag-checkered"></i> F1 Picker Admin</h1>
-                    <button id="logout-button" class="logout-btn">
-                        <i class="fas fa-sign-out-alt"></i> Logout
-                    </button>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>F1 Picker Admin Dashboard</title>
+    <link rel="stylesheet" href="f1-picker.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="admin-dashboard">
+        <header class="admin-header">
+            <h1><i class="fas fa-flag-checkered"></i> F1 Picker Admin</h1>
+            <button id="logout-btn" class="admin-btn">Logout</button>
+        </header>
+
+        <main class="admin-content">
+            <section class="admin-section">
+                <h2>Enter Race Results</h2>
+                <div class="form-group">
+                    <label for="race-select">Select Race:</label>
+                    <select id="race-select" class="form-control">
+                        <!-- Populated by JavaScript -->
+                    </select>
                 </div>
-            </header>
 
-            <div class="admin-content">
-                <div class="admin-grid">
-                    <section class="results-section card">
-                        <div class="card-header">
-                            <h2><i class="fas fa-trophy"></i> Race Results</h2>
-                        </div>
-                        <div class="card-body">
-                            <div class="form-group">
-                                <label for="admin-race-select">Select Race:</label>
-                                <select id="admin-race-select" class="form-control">
-                                    <option value="">Choose a race...</option>
-                                </select>
-                            </div>
-                            <div class="podium-inputs">
-                                <div class="form-group">
-                                    <label for="admin-first-place">
-                                        <i class="fas fa-medal" style="color: gold;"></i> 1st Place:
-                                    </label>
-                                    <select id="admin-first-place" class="form-control">
-                                        <option value="">Select driver...</option>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label for="admin-second-place">
-                                        <i class="fas fa-medal" style="color: silver;"></i> 2nd Place:
-                                    </label>
-                                    <select id="admin-second-place" class="form-control">
-                                        <option value="">Select driver...</option>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label for="admin-third-place">
-                                        <i class="fas fa-medal" style="color: #cd7f32;"></i> 3rd Place:
-                                    </label>
-                                    <select id="admin-third-place" class="form-control">
-                                        <option value="">Select driver...</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <button id="save-results" class="btn-primary">
-                                <i class="fas fa-save"></i> Save Results
-                            </button>
-                        </div>
-                    </section>
-
-                    <section class="submissions-section card">
-                        <div class="card-header">
-                            <h2><i class="fas fa-users"></i> User Submissions</h2>
-                        </div>
-                        <div class="card-body">
-                            <div id="submissions-list" class="submissions-grid"></div>
-                        </div>
-                    </section>
+                <div class="form-group">
+                    <label for="first-place">First Place:</label>
+                    <select id="first-place" class="form-control">
+                        <!-- Populated by JavaScript -->
+                    </select>
                 </div>
-            </div>
-        </div>
 
-        <!-- F1 Data -->
-        <script>
-            // F1 2024 Races Data
-            const F1_2024_RACES = [
-                { id: 'bahrain', name: 'Bahrain Grand Prix' },
-                { id: 'saudi', name: 'Saudi Arabian Grand Prix' },
-                { id: 'australia', name: 'Australian Grand Prix' },
-                { id: 'japan', name: 'Japanese Grand Prix' },
-                { id: 'china', name: 'Chinese Grand Prix' },
-                { id: 'miami', name: 'Miami Grand Prix' },
-                { id: 'emilia', name: 'Emilia Romagna Grand Prix' },
-                { id: 'monaco', name: 'Monaco Grand Prix' },
-                { id: 'canada', name: 'Canadian Grand Prix' },
-                { id: 'spain', name: 'Spanish Grand Prix' },
-                { id: 'austria', name: 'Austrian Grand Prix' },
-                { id: 'britain', name: 'British Grand Prix' },
-                { id: 'hungary', name: 'Hungarian Grand Prix' },
-                { id: 'belgium', name: 'Belgian Grand Prix' },
-                { id: 'netherlands', name: 'Dutch Grand Prix' },
-                { id: 'italy', name: 'Italian Grand Prix' },
-                { id: 'azerbaijan', name: 'Azerbaijan Grand Prix' },
-                { id: 'singapore', name: 'Singapore Grand Prix' },
-                { id: 'usa', name: 'United States Grand Prix' },
-                { id: 'mexico', name: 'Mexican Grand Prix' },
-                { id: 'brazil', name: 'Brazilian Grand Prix' },
-                { id: 'vegas', name: 'Las Vegas Grand Prix' },
-                { id: 'qatar', name: 'Qatar Grand Prix' },
-                { id: 'abu-dhabi', name: 'Abu Dhabi Grand Prix' }
-            ];
+                <div class="form-group">
+                    <label for="second-place">Second Place:</label>
+                    <select id="second-place" class="form-control">
+                        <!-- Populated by JavaScript -->
+                    </select>
+                </div>
 
-            // F1 2024 Drivers Data
-            const F1_2024_DRIVERS = [
-                { id: 'ver', name: 'Max Verstappen', team: 'Red Bull Racing' },
-                { id: 'per', name: 'Sergio Perez', team: 'Red Bull Racing' },
-                { id: 'ham', name: 'Lewis Hamilton', team: 'Mercedes' },
-                { id: 'rus', name: 'George Russell', team: 'Mercedes' },
-                { id: 'lec', name: 'Charles Leclerc', team: 'Ferrari' },
-                { id: 'sai', name: 'Carlos Sainz', team: 'Ferrari' },
-                { id: 'nor', name: 'Lando Norris', team: 'McLaren' },
-                { id: 'pia', name: 'Oscar Piastri', team: 'McLaren' },
-                { id: 'alo', name: 'Fernando Alonso', team: 'Aston Martin' },
-                { id: 'str', name: 'Lance Stroll', team: 'Aston Martin' },
-                { id: 'gas', name: 'Pierre Gasly', team: 'Alpine' },
-                { id: 'oco', name: 'Esteban Ocon', team: 'Alpine' },
-                { id: 'alb', name: 'Alexander Albon', team: 'Williams' },
-                { id: 'sar', name: 'Logan Sargeant', team: 'Williams' },
-                { id: 'tsu', name: 'Yuki Tsunoda', team: 'RB' },
-                { id: 'ric', name: 'Daniel Ricciardo', team: 'RB' },
-                { id: 'hul', name: 'Nico Hulkenberg', team: 'Haas F1 Team' },
-                { id: 'mag', name: 'Kevin Magnussen', team: 'Haas F1 Team' },
-                { id: 'bot', name: 'Valtteri Bottas', team: 'Kick Sauber' },
-                { id: 'zho', name: 'Guanyu Zhou', team: 'Kick Sauber' }
-            ];
-        </script>
+                <div class="form-group">
+                    <label for="third-place">Third Place:</label>
+                    <select id="third-place" class="form-control">
+                        <!-- Populated by JavaScript -->
+                    </select>
+                </div>
 
-        <script type="module">
-            // Import the functions you need from the SDKs you need
-            import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
-            import { getDatabase, ref, set, get, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-database.js";
-            import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js";
-            import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-analytics.js";
+                <button id="save-results" class="admin-btn">Save Results</button>
+            </section>
 
-            // Your web app's Firebase configuration
-            const firebaseConfig = {
-                apiKey: "AIzaSyAx1MMgohoUKntAfcBQa6TiBzauCRLSzJc",
-                authDomain: "f1-podium.firebaseapp.com",
-                projectId: "f1-podium",
-                storageBucket: "f1-podium.firebasestorage.app",
-                messagingSenderId: "435127757273",
-                appId: "1:435127757273:web:e94e296086c476fc13d1c8",
-                measurementId: "G-BEC5SYS6K3",
-                databaseURL: "https://f1-podium-default-rtdb.firebaseio.com"
-            };
+            <section class="admin-section">
+                <h2>Leaderboard</h2>
+                <div class="leaderboard-controls">
+                    <div class="form-group">
+                        <label for="leaderboard-race">View Race:</label>
+                        <select id="leaderboard-race" class="form-control">
+                            <!-- Populated by JavaScript -->
+                        </select>
+                    </div>
+                </div>
 
-            // Initialize Firebase
-            const app = initializeApp(firebaseConfig);
-            const analytics = getAnalytics(app);
-            const db = getDatabase(app);
-            const auth = getAuth(app);
+                <div class="leaderboard-container">
+                    <table id="leaderboard-table">
+                        <thead>
+                            <tr>
+                                <th>Position</th>
+                                <th>Name</th>
+                                <th>Picks</th>
+                                <th>Points</th>
+                            </tr>
+                        </thead>
+                        <tbody id="leaderboard-body">
+                            <!-- Populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
 
-            // Make Firebase services available globally
-            window.db = db;
-            window.auth = auth;
-            window.ref = ref;
-            window.set = set;
-            window.get = get;
-            window.serverTimestamp = serverTimestamp;
-            window.onAuthStateChanged = onAuthStateChanged;
-            window.signOut = signOut;
-        </script>
-        <script src="admin-dashboard.js"></script>
-    </body>
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getDatabase, ref, set, get, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+        import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            // Add your Firebase configuration here
+        };
+
+        // Initialize Firebase
+        window.firebaseConfig = firebaseConfig;
+        window.initializeApp = initializeApp;
+        window.getDatabase = getDatabase;
+        window.ref = ref;
+        window.set = set;
+        window.get = get;
+        window.serverTimestamp = serverTimestamp;
+        window.getAuth = getAuth;
+        window.signOut = signOut;
+    </script>
+
+    <!-- Admin Dashboard Script -->
+    <script src="admin-dashboard.js"></script>
+</body>
 </html> 

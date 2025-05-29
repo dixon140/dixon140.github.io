@@ -60,7 +60,9 @@ const POINTS = {
 document.addEventListener('DOMContentLoaded', () => {
     populateRaceSelect();
     populateDriverSelects();
+    populateBoardRaceSelect();
     loadUserPicks();
+    updateSubmissionBoard();
     setupEventListeners();
 });
 
@@ -72,6 +74,17 @@ function populateRaceSelect() {
         option.value = race.id;
         option.textContent = race.name;
         raceSelect.appendChild(option);
+    });
+}
+
+// Populate board race select
+function populateBoardRaceSelect() {
+    const boardRaceSelect = document.getElementById('board-race-select');
+    F1_2024_RACES.forEach(race => {
+        const option = document.createElement('option');
+        option.value = race.id;
+        option.textContent = race.name;
+        boardRaceSelect.appendChild(option);
     });
 }
 
@@ -89,34 +102,38 @@ function populateDriverSelects() {
     });
 }
 
+// Get driver name by ID
+function getDriverName(driverId) {
+    const driver = F1_2024_DRIVERS.find(d => d.id === driverId);
+    return driver ? driver.name : driverId;
+}
+
 // Load user's previous picks
-async function loadUserPicks() {
+function loadUserPicks() {
+    const savedPicks = JSON.parse(localStorage.getItem('f1Picks')) || {};
     const currentRace = document.getElementById('race-select').value;
-    if (!currentRace) return;
-
-    try {
-        const picksRef = ref(db, `picks/${currentRace}`);
-        const snapshot = await get(picksRef);
-
-        if (snapshot.exists()) {
-            const picks = snapshot.val();
-            document.getElementById('first-place').value = picks.first;
-            document.getElementById('second-place').value = picks.second;
-            document.getElementById('third-place').value = picks.third;
-        }
-    } catch (error) {
-        console.error('Error loading picks:', error);
+    const currentName = document.getElementById('name-select').value;
+    const pickKey = `${currentRace}_${currentName}`;
+    
+    if (savedPicks[pickKey]) {
+        document.getElementById('first-place').value = savedPicks[pickKey][0];
+        document.getElementById('second-place').value = savedPicks[pickKey][1];
+        document.getElementById('third-place').value = savedPicks[pickKey][2];
+    } else {
+        // Reset selects if no picks exist
+        document.getElementById('first-place').value = '';
+        document.getElementById('second-place').value = '';
+        document.getElementById('third-place').value = '';
     }
 }
 
 // Save user's picks
-async function savePicks() {
+function savePicks() {
     const raceId = document.getElementById('race-select').value;
+    const name = document.getElementById('name-select').value;
     const firstPlace = document.getElementById('first-place').value;
     const secondPlace = document.getElementById('second-place').value;
     const thirdPlace = document.getElementById('third-place').value;
-
-    console.log('Saving picks:', { raceId, firstPlace, secondPlace, thirdPlace });
 
     if (!raceId || !firstPlace || !secondPlace || !thirdPlace) {
         alert('Please select a race and complete your podium picks!');
@@ -129,67 +146,67 @@ async function savePicks() {
         return;
     }
 
-    try {
-        const picksRef = ref(db, `picks/${raceId}`);
-        console.log('Saving to path:', picksRef.toString());
+    const savedPicks = JSON.parse(localStorage.getItem('f1Picks')) || {};
+    const pickKey = `${raceId}_${name}`;
+    savedPicks[pickKey] = [firstPlace, secondPlace, thirdPlace];
+    localStorage.setItem('f1Picks', JSON.stringify(savedPicks));
+    
+    // Add success animation
+    const submitButton = document.getElementById('submit-picks');
+    submitButton.classList.add('success-animation');
+    setTimeout(() => {
+        submitButton.classList.remove('success-animation');
+    }, 500);
 
-        await set(picksRef, {
-            first: firstPlace,
-            second: secondPlace,
-            third: thirdPlace,
-            timestamp: serverTimestamp()
-        });
-
-        console.log('Picks saved successfully');
-
-        // Add visual feedback
-        const submitButton = document.getElementById('submit-picks');
-        submitButton.textContent = 'Picks Saved!';
-        submitButton.style.backgroundColor = '#28a745';
-        
-        // Add success animation to the picks container
-        const picksContainer = document.querySelector('.podium-picks');
-        picksContainer.classList.add('success-animation');
-        
-        // Reset button after 2 seconds
-        setTimeout(() => {
-            submitButton.textContent = 'Submit Picks';
-            submitButton.style.backgroundColor = '#e10600';
-            picksContainer.classList.remove('success-animation');
-        }, 2000);
-    } catch (error) {
-        console.error('Error saving picks:', error);
-        alert('Error saving picks. Please try again.');
-    }
+    // Update the submission board
+    updateSubmissionBoard();
 }
 
-// Calculate points for a race
-function calculatePoints(picks, results) {
-    let points = 0;
-    let correctPositions = 0;
+// Update submission board
+function updateSubmissionBoard() {
+    const boardRaceSelect = document.getElementById('board-race-select');
+    const selectedRace = boardRaceSelect.value;
+    const savedPicks = JSON.parse(localStorage.getItem('f1Picks')) || {};
+    const tbody = document.querySelector('#submissions-table tbody');
+    
+    // Clear existing rows
+    tbody.innerHTML = '';
+    
+    // Get all picks for the selected race
+    const racePicks = Object.entries(savedPicks)
+        .filter(([key]) => key.startsWith(selectedRace + '_'))
+        .map(([key, picks]) => ({
+            name: key.split('_')[1],
+            picks: picks
+        }));
 
-    // Check each position
-    for (let i = 0; i < 3; i++) {
-        if (picks[i] === results[i]) {
-            points += POINTS.correctPosition;
-            correctPositions++;
-        } else if (results.includes(picks[i])) {
-            points += POINTS.correctPodium;
-        }
+    if (racePicks.length === 0) {
+        const row = document.createElement('tr');
+        row.innerHTML = '<td colspan="4" class="empty-state">No picks submitted for this race yet</td>';
+        tbody.appendChild(row);
+        return;
     }
 
-    // Bonus for perfect podium
-    if (correctPositions === 3) {
-        points += POINTS.perfectPodium;
-    }
-
-    return points;
+    // Add rows for each submission
+    racePicks.forEach(({ name, picks }) => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${name}</td>
+            <td>${getDriverName(picks[0])}</td>
+            <td>${getDriverName(picks[1])}</td>
+            <td>${getDriverName(picks[2])}</td>
+        `;
+        tbody.appendChild(row);
+    });
 }
 
 // Setup event listeners
 function setupEventListeners() {
     document.getElementById('race-select').addEventListener('change', loadUserPicks);
+    document.getElementById('name-select').addEventListener('change', loadUserPicks);
     document.getElementById('submit-picks').addEventListener('click', savePicks);
+    document.getElementById('board-race-select').addEventListener('change', updateSubmissionBoard);
+    document.getElementById('refresh-board').addEventListener('click', updateSubmissionBoard);
 }
 
 // Function to display standings (to be implemented)
