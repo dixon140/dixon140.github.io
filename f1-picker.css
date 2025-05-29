@@ -465,6 +465,32 @@ nav a:hover {
     overflow-x: auto;
 }
 
+/* Season Points Table Container */
+.submission-board:last-of-type {
+    max-height: 400px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #e10600 #1e1e1e;
+}
+
+.submission-board:last-of-type::-webkit-scrollbar {
+    width: 8px;
+}
+
+.submission-board:last-of-type::-webkit-scrollbar-track {
+    background: #1e1e1e;
+    border-radius: 4px;
+}
+
+.submission-board:last-of-type::-webkit-scrollbar-thumb {
+    background: #e10600;
+    border-radius: 4px;
+}
+
+.submission-board:last-of-type::-webkit-scrollbar-thumb:hover {
+    background: #b30000;
+}
+
 /* Season Points Table Styles */
 #season-points-table {
     width: 100%;
@@ -532,8 +558,8 @@ nav a:hover {
 
 #season-points-table td:last-child {
     font-weight: 600;
-    color: #FFD700;
-    text-shadow: 0 2px 4px rgba(255, 215, 0, 0.2);
+    color: #4CAF50;
+    text-shadow: 0 2px 4px rgba(76, 175, 80, 0.2);
     font-size: 1.1em;
 }
 

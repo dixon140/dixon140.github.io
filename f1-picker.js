@@ -101,7 +101,7 @@ async function updateSeasonPoints() {
     
     try {
         // Show loading state
-        tbody.innerHTML = '<tr><td colspan="4" class="board-loading">Loading...</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="3" class="board-loading">Loading...</td></tr>';
 
         // Get all picks
         const picksRef = ref(db, 'picks');
@@ -115,8 +115,8 @@ async function updateSeasonPoints() {
 
         // Calculate totals for each player
         const totals = {
-            Calvin: { points: 0, perfectPodiums: 0 },
-            Ethan: { points: 0, perfectPodiums: 0 }
+            Calvin: { points: 0 },
+            Ethan: { points: 0 }
         };
 
         // Calculate points for each race
@@ -128,11 +128,6 @@ async function updateSeasonPoints() {
 
             const points = calculatePoints(pick, raceResults);
             totals[name].points += points;
-
-            // Check for perfect podium (9 points for positions + 5 bonus)
-            if (points >= POINTS.correctPosition * 3 + POINTS.perfectPodium) {
-                totals[name].perfectPodiums++;
-            }
         });
 
         // Sort by points
@@ -150,18 +145,17 @@ async function updateSeasonPoints() {
                 <td>${index + 1}</td>
                 <td>${data.name}</td>
                 <td>${data.points}</td>
-                <td>${data.perfectPodiums}</td>
             `;
             tbody.appendChild(row);
         });
 
         // If no data was found, show a message
         if (Object.keys(picks).length === 0 || Object.keys(results).length === 0) {
-            tbody.innerHTML = '<tr><td colspan="4" class="empty-state">No data available yet</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="3" class="empty-state">No data available yet</td></tr>';
         }
     } catch (error) {
         console.error('Error updating season points:', error);
-        tbody.innerHTML = '<tr><td colspan="4" class="error">Error loading season points. Please try again.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="3" class="error">Error loading season points. Please try again.</td></tr>';
     }
 }
 
