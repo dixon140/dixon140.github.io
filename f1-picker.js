@@ -95,10 +95,11 @@ async function loadUserPicks() {
     if (!currentRace) return;
 
     try {
-        const picksDoc = await getDoc(doc(db, 'picks', currentRace));
+        const picksRef = ref(db, `picks/${currentRace}`);
+        const snapshot = await get(picksRef);
 
-        if (picksDoc.exists()) {
-            const picks = picksDoc.data();
+        if (snapshot.exists()) {
+            const picks = snapshot.val();
             document.getElementById('first-place').value = picks.first;
             document.getElementById('second-place').value = picks.second;
             document.getElementById('third-place').value = picks.third;
@@ -129,10 +130,10 @@ async function savePicks() {
     }
 
     try {
-        const picksRef = doc(db, 'picks', raceId);
-        console.log('Saving to document:', picksRef.path);
+        const picksRef = ref(db, `picks/${raceId}`);
+        console.log('Saving to path:', picksRef.toString());
 
-        await setDoc(picksRef, {
+        await set(picksRef, {
             first: firstPlace,
             second: secondPlace,
             third: thirdPlace,
