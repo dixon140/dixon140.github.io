@@ -166,8 +166,8 @@ document.addEventListener('DOMContentLoaded', () => {
     populateBoardRaceSelect();
     
     // Set Monaco as default race
-    document.getElementById('race-select').value = 'britain';
-    document.getElementById('board-race-select').value = 'britain';
+    document.getElementById('race-select').value = 'belgium';
+    document.getElementById('board-race-select').value = 'belgium';
     
     loadUserPicks();
     updateSubmissionBoard();
@@ -189,7 +189,7 @@ function populateRaceSelect() {
         const option = document.createElement('option');
         option.value = race.id;
         option.textContent = race.name;
-        if (race.id === 'britain') {
+        if (race.id === 'belgium') {
             option.selected = true;
         }
         raceSelect.appendChild(option);
@@ -198,7 +198,7 @@ function populateRaceSelect() {
         const boardOption = document.createElement('option');
         boardOption.value = race.id;
         boardOption.textContent = race.name;
-        if (race.id === 'britain') {
+        if (race.id === 'belgium') {
             boardOption.selected = true;
         }
         boardRaceSelect.appendChild(boardOption);
