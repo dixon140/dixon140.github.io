@@ -2,7 +2,7 @@ import React from 'react';
 import ProjectCard from './ProjectCard';
 import linuxTaskManagerImg from '../assets/linux-task-manager.png';
 import fPickerImg from '../assets/f1-picker.png';
-const sampleImg = 'https://via.placeholder.com/120x90?text=Preview';
+import nflPickerImg from '../assets/nfl-picker.png';
 
 const projects = [
   {
@@ -24,7 +24,7 @@ const projects = [
     description: 'Interactive web application for weekly NFL predictions with dynamic form handling and user interface logic. Implements data persistence and user session management for tracking picks throughout the season.',
     link: '/projects/nfl-picker/standings.html',
     tech: ['JavaScript', 'HTML/CSS', 'Forms', 'Session Management'],
-    image: sampleImg,
+    image: nflPickerImg,
   },
 ];
 
