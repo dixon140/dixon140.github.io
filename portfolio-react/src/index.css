@@ -108,3 +108,43 @@ section {
   border: 1.2px solid var(--accent);
   box-shadow: 0 2px 8px 0 rgba(31,38,135,0.08);
 }
+
+/* Mobile responsive navigation */
+@media (max-width: 768px) {
+  .glassy-nav {
+    top: 1rem;
+    left: 1rem;
+    right: 1rem;
+    transform: none;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.8rem 1rem;
+  }
+  
+  .glassy-nav a {
+    font-size: 0.95rem;
+    padding: 0.4rem 0.8rem;
+    white-space: nowrap;
+  }
+  
+  html {
+    scroll-padding-top: 8rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .glassy-nav {
+    gap: 0.3rem;
+    padding: 0.6rem 0.8rem;
+  }
+  
+  .glassy-nav a {
+    font-size: 0.85rem;
+    padding: 0.3rem 0.6rem;
+  }
+  
+  html {
+    scroll-padding-top: 9rem;
+  }
+}

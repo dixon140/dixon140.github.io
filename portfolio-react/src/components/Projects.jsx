@@ -31,7 +31,7 @@ const projects = [
 const Projects = () => (
   <section className="my-14">
     <h2 className="gradient mt-0 mb-9 text-center text-2xl">Projects</h2>
-    <div className="flex flex-col items-center gap-6 w-full">
+    <div className="flex flex-col items-center gap-6 w-full px-4">
       {projects.map((project) => (
         <ProjectCard key={project.title} {...project} />
       ))}
