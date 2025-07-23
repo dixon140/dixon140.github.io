@@ -28,11 +28,13 @@ const ProjectCard = ({ title, description, link, tech, image }) => {
       onBlur={() => setHovered(false)}
       onClick={handleCardClick}
     >
-      <img
-        src={image || 'https://via.placeholder.com/300x300?text=Preview'}
-        alt={title + ' preview'}
-        className="w-full max-w-[250px] md:max-w-[300px] max-h-[250px] md:max-h-[300px] object-cover rounded-md bg-gray-200 flex-shrink-0 mr-0 md:mr-6 mb-4 md:mb-0 mx-auto md:mx-0"
-      />
+      <div className="w-[250px] md:w-[300px] flex justify-center items-center mr-0 md:mr-6 mb-4 md:mb-0 mx-auto md:mx-0">
+        <img
+          src={image}
+          alt={title + ' preview'}
+          className="max-w-[250px] md:max-w-[300px] max-h-[250px] md:max-h-[300px] w-auto h-auto object-cover rounded-md bg-gray-200 flex-shrink-0"
+        />
+      </div>
       <div className="flex-1 text-center md:text-left">
         <div 
           className={`
