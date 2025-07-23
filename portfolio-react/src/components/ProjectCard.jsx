@@ -1,65 +1,5 @@
 import React, { useState } from 'react';
 
-const badgeStyle = {
-  display: 'inline-block',
-  background: 'var(--accent)',
-  color: '#fff',
-  borderRadius: '12px',
-  padding: '0.22rem 0.7rem',
-  fontSize: '0.95rem',
-  fontWeight: 600,
-  marginRight: '0.4rem',
-  marginBottom: '0.4rem',
-  letterSpacing: '0.5px',
-};
-
-const imgStyle = {
-  maxWidth: 300,
-  maxHeight: 300,
-  width: '100%',
-  height: 'auto',
-  objectFit: 'cover',
-  borderRadius: '5px',
-  background: '#eee',
-  flexShrink: 0,
-  marginRight: '1.5rem',
-};
-
-const cardBaseStyle = {
-  display: 'flex',
-  alignItems: 'flex-start',
-  border: '2px solid var(--card-border)',
-  borderColor: 'var(--card-border)',
-  borderRadius: '18px',
-  padding: '1.25rem',
-  marginBottom: '1.5rem',
-  maxWidth: 650,
-  background: 'rgba(255,255,255,0.18)',
-  boxShadow: '0 8px 32px 0 rgba(31,38,135,0.10)',
-  backdropFilter: 'blur(12px)',
-  WebkitBackdropFilter: 'blur(12px)',
-  transition: 'box-shadow 0.2s, transform 0.2s, border-color 0.2s',
-  cursor: 'pointer',
-};
-
-const cardHoverStyle = {
-  boxShadow: '0 12px 32px 0 rgba(255,93,115,0.18)',
-  transform: 'scale(1.025)',
-  borderColor: 'var(--accent)',
-};
-
-const linkBaseStyle = {
-  fontSize: '1.5rem',
-  fontWeight: 'bold',
-  textDecoration: 'none',
-  color: 'var(--accent)',
-  transition: 'color 0.2s',
-};
-
-const linkHoverStyle = {
-  color: 'var(--bright-pink-crayola)',
-};
-
 const ProjectCard = ({ title, description, link, tech, image }) => {
   const [hovered, setHovered] = useState(false);
 
@@ -75,8 +15,12 @@ const ProjectCard = ({ title, description, link, tech, image }) => {
 
   return (
     <div
-      className="project-card"
-      style={{ ...cardBaseStyle, ...(hovered ? cardHoverStyle : {}) }}
+      className={`
+        project-card flex items-start border-2 rounded-[18px] p-5 mb-6 max-w-[750px]
+        bg-white/18 shadow-[0_8px_32px_0_rgba(31,38,135,0.10)] backdrop-blur-[12px]
+        transition-all duration-200 cursor-pointer border-[var(--card-border)]
+        ${hovered ? 'shadow-[0_12px_32px_0_rgba(255,93,115,0.18)] scale-[1.025] border-[var(--accent)]' : ''}
+      `}
       tabIndex={0}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
@@ -85,21 +29,28 @@ const ProjectCard = ({ title, description, link, tech, image }) => {
       onClick={handleCardClick}
     >
       <img
-        src={image || 'https://via.placeholder.com/120x90?text=Preview'}
+        src={image || 'https://via.placeholder.com/300x300?text=Preview'}
         alt={title + ' preview'}
-        style={imgStyle}
+        className="max-w-[300px] max-h-[300px] w-auto h-auto rounded-md bg-gray-200 flex-shrink-0 mr-6"
       />
-      <div style={{ flex: 1 }}>
+      <div className="flex-1">
         <div 
-          style={{ ...linkBaseStyle, ...(hovered ? linkHoverStyle : {}) }}
-          className="project-title"
+          className={`
+            project-title text-2xl font-bold no-underline transition-colors duration-200
+            ${hovered ? 'text-[var(--bright-pink-crayola)]' : 'text-[var(--accent)]'}
+          `}
         >
           {title}
         </div>
-        <p style={{ marginTop: '0.5rem', color: 'var(--text)' }}>{description}</p>
-        <div style={{ marginTop: '0.75rem' }}>
+        <p className="mt-2 text-[var(--text)]">{description}</p>
+        <div className="mt-3">
           {tech && tech.map((t) => (
-            <span key={t} style={badgeStyle}>{t}</span>
+            <span 
+              key={t} 
+              className="inline-block bg-[var(--accent)] text-white rounded-xl px-3 py-1 text-[0.95rem] font-semibold mr-2 mb-2 tracking-wide"
+            >
+              {t}
+            </span>
           ))}
         </div>
       </div>

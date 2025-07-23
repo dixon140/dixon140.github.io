@@ -2,7 +2,7 @@ import React from 'react';
 
 const Contact = () => (
   <section style={{ margin: '3.5rem 0' }} id="contact">
-    <h2 className="gradient" style={{ marginTop: 0, marginBottom: '2.2rem', textAlign: 'center' }}>Get In Touch</h2>
+    <h2 className="gradient text-2xl" style={{ marginTop: 0, marginBottom: '2.2rem', textAlign: 'center' }}>Contact</h2>
     <div style={{
       background: 'rgba(36,36,40,0.7)',
       borderRadius: '18px',
@@ -32,23 +32,9 @@ const Contact = () => (
         >
           📧 dixonethan03@gmail.com
         </a>
-        <a 
-          href="tel:+17657618383" 
-          style={{ 
-            color: 'var(--accent)', 
-            textDecoration: 'none', 
-            fontSize: '1.1rem',
-            fontWeight: '600',
-            transition: 'color 0.2s'
-          }}
-          onMouseOver={(e) => e.target.style.color = 'var(--bright-pink-crayola)'}
-          onMouseOut={(e) => e.target.style.color = 'var(--accent)'}
-        >
-          📱 (765) 761-8383
-        </a>
         <div style={{ display: 'flex', gap: '1.5rem', marginTop: '0.5rem' }}>
           <a 
-            href="https://linkedin.com/in/ethan-dixon" 
+            href="https://www.linkedin.com/in/ethan-dixon-b0617a26b/" 
             target="_blank" 
             rel="noopener noreferrer"
             style={{ 

@@ -29,15 +29,9 @@ const projects = [
 ];
 
 const Projects = () => (
-  <section style={{ margin: '3.5rem 0' }}>
-    <h2 className="gradient" style={{ marginTop: 0, marginBottom: '2.2rem', textAlign: 'center' }}>Projects</h2>
-    <div style={{
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      gap: '1.5rem',
-      width: '100%',
-    }}>
+  <section className="my-14">
+    <h2 className="gradient mt-0 mb-9 text-center text-2xl">Projects</h2>
+    <div className="flex flex-col items-center gap-6 w-full">
       {projects.map((project) => (
         <ProjectCard key={project.title} {...project} />
       ))}

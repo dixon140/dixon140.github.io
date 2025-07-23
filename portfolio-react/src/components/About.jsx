@@ -2,7 +2,7 @@ import React from 'react';
 
 const About = () => (
   <section style={{ margin: '3.5rem 0' }} id="about">
-    <h2 className="gradient" style={{ marginTop: 0, marginBottom: '2.2rem', textAlign: 'center' }}>Education</h2>
+    <h2 className="gradient text-2xl" style={{ marginTop: 0, marginBottom: '2.2rem', textAlign: 'center' }}>Education</h2>
     <div style={{
       maxWidth: 600,
       margin: '0 auto'

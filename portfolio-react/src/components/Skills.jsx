@@ -46,7 +46,7 @@ const categoryStyle = {
 
 const Skills = () => (
   <section style={{ margin: '3.5rem 0 3.5rem 0' }}>
-    <h2 className="gradient" style={{ textAlign: 'center', marginBottom: '2rem' }}>Skills & Tech Stack</h2>
+    <h2 className="gradient text-2xl" style={{ textAlign: 'center', marginBottom: '2rem' }}>Skills & Tech Stack</h2>
     <p style={{ textAlign: 'center', maxWidth: 600, margin: '0 auto 2.5rem auto', color: 'var(--text)' }}>
       Strong foundation in computer science fundamentals with hands-on experience in systems programming, web development, and software engineering. Proficient across the full technology stack from low-level C programming to modern web frameworks.
     </p>
