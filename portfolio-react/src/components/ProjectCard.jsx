@@ -14,8 +14,10 @@ const badgeStyle = {
 };
 
 const imgStyle = {
-  width: 300,
-  height: 300,
+  maxWidth: 300,
+  maxHeight: 300,
+  width: '100%',
+  height: 'auto',
   objectFit: 'cover',
   borderRadius: '5px',
   background: '#eee',

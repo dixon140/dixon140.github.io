@@ -1,7 +1,7 @@
 import React from 'react';
 import ProjectCard from './ProjectCard';
 import linuxTaskManagerImg from '../assets/linux-task-manager.png';
-
+import fPickerImg from '../assets/f1-picker.png';
 const sampleImg = 'https://via.placeholder.com/120x90?text=Preview';
 
 const projects = [
@@ -15,14 +15,14 @@ const projects = [
   {
     title: 'F1 Race Tracker',
     description: 'Full-stack web application with React frontend and Flask/SQLAlchemy backend. Features secure user authentication, admin privileges, and relational database design with multiple tables (Drivers, Teams, Races, Results). Comprehensive racing management platform.',
-    link: '../f1-picker.html', // Navigate up one level to parent directory
+    link: '/f1-picker.html',
     tech: ['React', 'Flask', 'SQLAlchemy', 'SQLite', 'Authentication', 'RESTful APIs'],
-    image: sampleImg,
+    image: fPickerImg,
   },
   {
     title: 'NFL Game Picker',
     description: 'Interactive web application for weekly NFL predictions with dynamic form handling and user interface logic. Implements data persistence and user session management for tracking picks throughout the season.',
-    link: '../standings.html', // Navigate up one level to parent directory
+    link: '/standings.html',
     tech: ['JavaScript', 'HTML/CSS', 'Forms', 'Session Management'],
     image: sampleImg,
   },
