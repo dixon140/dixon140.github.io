@@ -12,8 +12,8 @@ const F1_2024_RACES = [
     { id: 'canada', name: 'Canadian Grand Prix', date: '2025-06-15' },
     { id: 'austria', name: 'Austrian Grand Prix', date: '2025-06-29' },
     { id: 'britain', name: 'British Grand Prix', date: '2025-07-06' },
-    { id: 'hungary', name: 'Hungarian Grand Prix', date: '2025-07-27' },
-    { id: 'belgium', name: 'Belgian Grand Prix', date: '2025-08-03' },
+    { id: 'belgium', name: 'Belgian Grand Prix', date: '2025-07-27' },
+    { id: 'hungary', name: 'Hungarian Grand Prix', date: '2025-08-03' },
     { id: 'netherlands', name: 'Dutch Grand Prix', date: '2025-08-31' },
     { id: 'italy', name: 'Italian Grand Prix', date: '2025-09-07' },
     { id: 'azerbaijan', name: 'Azerbaijan Grand Prix', date: '2025-09-21' },
@@ -166,8 +166,8 @@ document.addEventListener('DOMContentLoaded', () => {
     populateBoardRaceSelect();
     
     // Set Monaco as default race
-    document.getElementById('race-select').value = 'belgium';
-    document.getElementById('board-race-select').value = 'belgium';
+    document.getElementById('race-select').value = 'hungary';
+    document.getElementById('board-race-select').value = 'hungary';
     
     loadUserPicks();
     updateSubmissionBoard();
@@ -189,7 +189,7 @@ function populateRaceSelect() {
         const option = document.createElement('option');
         option.value = race.id;
         option.textContent = race.name;
-        if (race.id === 'belgium') {
+        if (race.id === 'hungary') {
             option.selected = true;
         }
         raceSelect.appendChild(option);
@@ -198,7 +198,7 @@ function populateRaceSelect() {
         const boardOption = document.createElement('option');
         boardOption.value = race.id;
         boardOption.textContent = race.name;
-        if (race.id === 'belgium') {
+        if (race.id === 'hungary') {
             boardOption.selected = true;
         }
         boardRaceSelect.appendChild(boardOption);
