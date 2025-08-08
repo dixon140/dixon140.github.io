@@ -1,26 +1,19 @@
 import React from 'react';
 
 const Hero = () => (
-  <section style={{
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: '3.5rem 0 2.5rem 0',
-    background: 'var(--hero-bg)',
-    color: 'var(--hero-text)',
-    borderRadius: '1.5rem',
-    marginBottom: '2.5rem',
-    boxShadow: '0 8px 32px 0 rgba(31,38,135,0.18)',
-    backdropFilter: 'blur(18px)',
-    WebkitBackdropFilter: 'blur(18px)',
-    border: '1.5px solid rgba(255,255,255,0.08)'
-  }}>
-    {/* Optional avatar: <img src="/avatar.png" alt="Ethan Dixon" style={{ width: 100, borderRadius: '50%', marginBottom: '1rem' }} /> */}
-    <h1 className="gradient" style={{ fontSize: '2.8rem', margin: 0, fontFamily: 'Montserrat, Bebas Neue, sans-serif', letterSpacing: '2px', marginBottom: '1.1rem' }}>Ethan Dixon</h1>
-    <h2 style={{ fontSize: '1.5rem', fontWeight: 400, margin: '0 0 0.5rem 0', color: 'var(--hero-accent)' }}>Computer Science Student & Developer</h2>
-    <p style={{ fontSize: '1.1rem', maxWidth: 500, textAlign: 'center', margin: 0 }}>
-      Purdue CS student passionate about building robust applications - from systems programming in C/C++ to full-stack web development. Experience includes professional software engineering at Elanco Animal Health.
+  <section
+    className="flex flex-col items-center justify-center rounded-2xl mb-10 px-6 py-14 text-[var(--hero-text)]
+               shadow-[0_8px_32px_0_rgba(31,38,135,0.18)] backdrop-blur-[18px]
+               border border-white/10"
+    style={{ background: 'var(--hero-bg)' }}
+  >
+    {/* Optional avatar */}
+    <h1 className="gradient text-[2.4rem] sm:text-[2.8rem] tracking-[2px] mb-4 font-bold">Ethan Dixon</h1>
+    <h2 className="text-[1.25rem] sm:text-[1.5rem] font-normal text-[var(--hero-accent)] mb-2">
+      Full-Stack & Application Developer
+    </h2>
+    <p className="text-[1.05rem] max-w-[520px] text-center m-0">
+      I specialize in building high-performance applications with C++ and C, from robust desktop software to efficient systems tools. Passionate about solving complex problems, optimizing code, and delivering reliable solutions for real-world challenges.
     </p>
   </section>
 );

@@ -10,7 +10,7 @@ import './App.css';
 
 function App() {
   return (
-    <div className="container" style={{ maxWidth: 800, margin: '0 auto', padding: '2rem' }}>
+    <div className="container mx-auto max-w-[800px] px-8 py-8">
       <Nav />
       <div id="home">
         <Hero />
@@ -21,9 +21,15 @@ function App() {
       <div id="skills">
         <Skills />
       </div>
-      <Experience />
-      <About />
-      <Contact />
+      <div id="experience">
+        <Experience />
+      </div>
+      <div id="about">
+        <About />
+      </div>
+      <div id="contact">
+        <Contact />
+      </div>
       <Footer />
     </div>
   );

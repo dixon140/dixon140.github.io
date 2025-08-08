@@ -8,7 +8,7 @@ const projects = [
   {
     title: 'Linux Task Manager',
     description: 'Systems programming project using C and QT to build a task manager that reads from the /proc filesystem. Features real-time process monitoring, memory mapping visualization, and process control (kill, stop, continue). Team collaboration with 3 developers.',
-    link: 'https://github.com/dixon140/linux-task-manager', // Update with real GitHub link
+    link: 'https://github.com/dixon140/linux-task-manager',
     tech: ['C', 'QT', 'Linux', 'Systems Programming', '/proc filesystem'],
     image: linuxTaskManagerImg,
   },
