@@ -116,15 +116,19 @@ async function updateSeasonPoints() {
         // Calculate totals dynamically for each player
         const totals = {};
 
-        // Calculate points for each race
+        // Ensure every person with any pick appears in totals (even if no results yet)
+        Object.entries(picks).forEach(([key, pick]) => {
+            const displayName = (pick && pick.name ? String(pick.name).trim() : 'Unknown');
+            if (!totals[displayName]) totals[displayName] = { points: 0 };
+        });
+
+        // Add points only where results exist
         Object.entries(picks).forEach(([key, pick]) => {
             const raceId = String(key).split('_')[0];
             const displayName = (pick && pick.name ? String(pick.name).trim() : 'Unknown');
             const raceResults = results[raceId];
             if (!raceResults) return;
-
             const points = calculatePoints(pick, raceResults);
-            if (!totals[displayName]) totals[displayName] = { points: 0 };
             totals[displayName].points += points;
         });
 

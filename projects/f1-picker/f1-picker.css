@@ -76,6 +76,7 @@ nav a:hover {
     font-size: 1.1em;
     background-color: #2a2a2a;
     color: #ffffff;
+    box-sizing: border-box;
 }
 
 #race-select option {
