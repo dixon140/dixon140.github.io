@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>WebXR F1 MultiViewer</title>
+  <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/aframe-super-hands-component@4.0.5/dist/aframe-super-hands-component.min.js"></script>
+  <script src="/js/sceneLayout.js" type="module"></script>
+  <script src="/js/videoPanel.js" type="module"></script>
+  <script src="/js/videoManager.js" type="module"></script>
+  <script src="/js/interaction.js" type="module"></script>
+  <link rel="stylesheet" href="/assets/styles.css" />
+  <style> body { margin: 0; } </style>
+</head>
+<body>
+  <div id="prelogin">
+    <form id="loginForm" style="max-width: 360px; margin: 24px auto; display: flex; flex-direction: column; gap: 12px;">
+      <h2>Sign in to F1 TV</h2>
+      <input name="email" type="email" placeholder="Email" required />
+      <input name="password" type="password" placeholder="Password" required />
+      <button type="submit">Login</button>
+      <div id="loginError" style="color:crimson"></div>
+    </form>
+  </div>
+
+  <div id="app" style="display:none">
+    <a-scene renderer="colorManagement: true" xr-mode-ui="enabled: true">
+      <a-assets id="assets"></a-assets>
+
+      <a-entity id="rig">
+        <a-entity id="camera" camera look-controls wasd-controls position="0 1.6 0"></a-entity>
+      </a-entity>
+
+      <a-entity id="pitwall"></a-entity>
+
+      <!-- VR controllers with ray pointers -->
+      <a-entity laser-controls="hand: left" raycaster="objects: .interactable" super-hands></a-entity>
+      <a-entity laser-controls="hand: right" raycaster="objects: .interactable" super-hands></a-entity>
+
+      <!-- Desktop mouse ray cursor -->
+      <a-entity cursor="rayOrigin: mouse" raycaster="objects: .interactable"></a-entity>
+
+      <a-sky color="#0a0a0a"></a-sky>
+    </a-scene>
+  </div>
+
+  <script type="module">
+    const loginForm = document.getElementById('loginForm');
+    const loginError = document.getElementById('loginError');
+    const appDiv = document.getElementById('app');
+    const preloginDiv = document.getElementById('prelogin');
+
+    loginForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      loginError.textContent = '';
+      const form = new FormData(loginForm);
+      const email = form.get('email');
+      const password = form.get('password');
+      try {
+        const resp = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({ email, password })
+        });
+        const data = await resp.json();
+        if (!resp.ok) throw new Error(data.error || 'Login failed');
+
+        preloginDiv.style.display = 'none';
+        appDiv.style.display = 'block';
+
+        // Load streams and build scene
+        const streamsResp = await fetch('/api/streams', { credentials: 'include' });
+        const streamsData = await streamsResp.json();
+        if (streamsResp.ok) {
+          window.buildPitWall(streamsData.feeds || []);
+        } else {
+          console.error(streamsData);
+        }
+      } catch (err) {
+        loginError.textContent = err.message;
+      }
+    });
+  </script>
+</body>
+</html>

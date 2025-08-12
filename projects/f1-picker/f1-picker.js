@@ -113,21 +113,19 @@ async function updateSeasonPoints() {
         const resultsSnapshot = await get(resultsRef);
         const results = resultsSnapshot.val() || {};
 
-        // Calculate totals for each player
-        const totals = {
-            Calvin: { points: 0 },
-            Ethan: { points: 0 }
-        };
+        // Calculate totals dynamically for each player
+        const totals = {};
 
         // Calculate points for each race
         Object.entries(picks).forEach(([key, pick]) => {
-            const [raceId, name] = key.split('_');
+            const raceId = String(key).split('_')[0];
+            const displayName = (pick && pick.name ? String(pick.name).trim() : 'Unknown');
             const raceResults = results[raceId];
-            
             if (!raceResults) return;
 
             const points = calculatePoints(pick, raceResults);
-            totals[name].points += points;
+            if (!totals[displayName]) totals[displayName] = { points: 0 };
+            totals[displayName].points += points;
         });
 
         // Sort by points
@@ -169,6 +167,15 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('race-select').value = 'hungary';
     document.getElementById('board-race-select').value = 'hungary';
     
+    // Prefill name from local storage
+    try {
+        const savedName = localStorage.getItem('f1PickerName');
+        if (savedName) {
+            const input = document.getElementById('name-input');
+            if (input) input.value = savedName;
+        }
+    } catch (_) {}
+
     loadUserPicks();
     updateSubmissionBoard();
     updateSeasonPoints();
@@ -240,11 +247,34 @@ function getDriverName(driverId) {
     return driver ? driver.name : driverId;
 }
 
+// Helpers for typed names
+function sanitizeKeyName(name) {
+    if (!name) return '';
+    const trimmed = String(name).trim();
+    // Firebase RTDB keys cannot contain . # $ [ ] /
+    return trimmed
+        .replace(/[.#$\[\]\/]/g, '-')
+        .replace(/\s+/g, '-')
+        .toLowerCase();
+}
+
+function getTypedName() {
+    const input = document.getElementById('name-input');
+    return input ? input.value.trim() : '';
+}
+
 // Load user's previous picks
 async function loadUserPicks() {
     const currentRace = document.getElementById('race-select').value;
-    const currentName = document.getElementById('name-select').value;
-    const pickKey = `${currentRace}_${currentName}`;
+    const typedName = getTypedName();
+    if (!typedName) {
+        document.getElementById('first-place').value = '';
+        document.getElementById('second-place').value = '';
+        document.getElementById('third-place').value = '';
+        return;
+    }
+
+    const pickKey = `${currentRace}_${sanitizeKeyName(typedName)}`;
 
     try {
         const picksRef = ref(db, `picks/${pickKey}`);
@@ -256,14 +286,12 @@ async function loadUserPicks() {
             document.getElementById('second-place').value = picks.second;
             document.getElementById('third-place').value = picks.third;
         } else {
-            // Reset selects if no picks exist
             document.getElementById('first-place').value = '';
             document.getElementById('second-place').value = '';
             document.getElementById('third-place').value = '';
         }
     } catch (error) {
         console.error('Error loading picks:', error);
-        // Reset selects on error
         document.getElementById('first-place').value = '';
         document.getElementById('second-place').value = '';
         document.getElementById('third-place').value = '';
@@ -273,10 +301,15 @@ async function loadUserPicks() {
 // Save user's picks
 async function savePicks() {
     const raceId = document.getElementById('race-select').value;
-    const name = document.getElementById('name-select').value;
+    const name = getTypedName();
     const firstPlace = document.getElementById('first-place').value;
     const secondPlace = document.getElementById('second-place').value;
     const thirdPlace = document.getElementById('third-place').value;
+
+    if (!name) {
+        alert('Please enter your name.');
+        return;
+    }
 
     if (!raceId || !firstPlace || !secondPlace || !thirdPlace) {
         alert('Please select a race and complete your podium picks!');
@@ -291,7 +324,7 @@ async function savePicks() {
 
     try {
         // Save to Firebase
-        const pickKey = `${raceId}_${name}`;
+        const pickKey = `${raceId}_${sanitizeKeyName(name)}`;
         const picksRef = ref(db, `picks/${pickKey}`);
         await set(picksRef, {
             name: name,
@@ -300,6 +333,8 @@ async function savePicks() {
             third: thirdPlace,
             timestamp: serverTimestamp()
         });
+
+        try { localStorage.setItem('f1PickerName', name); } catch (_) {}
 
         // Add success animation
         const submitButton = document.getElementById('submit-picks');
@@ -428,7 +463,13 @@ async function updateSubmissionBoard() {
 // Setup event listeners
 function setupEventListeners() {
     document.getElementById('race-select').addEventListener('change', loadUserPicks);
-    document.getElementById('name-select').addEventListener('change', loadUserPicks);
+    const nameInput = document.getElementById('name-input');
+    if (nameInput) {
+        nameInput.addEventListener('input', loadUserPicks);
+        nameInput.addEventListener('blur', () => {
+            try { localStorage.setItem('f1PickerName', nameInput.value.trim()); } catch (_) {}
+        });
+    }
     document.getElementById('submit-picks').addEventListener('click', savePicks);
     document.getElementById('board-race-select').addEventListener('change', updateSubmissionBoard);
     document.getElementById('refresh-board').addEventListener('click', updateSubmissionBoard);

@@ -951,7 +951,8 @@ nav a:hover {
     text-shadow: 0 2px 4px rgba(225, 6, 0, 0.2);
 }
 
-.form-group select {
+.form-group select,
+.form-group input.form-control[type="text"] {
     width: 100%;
     padding: 15px 20px;
     border: 2px solid #333;
@@ -972,13 +973,22 @@ nav a:hover {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-.form-group select:hover {
+/* Text input specific adjustments (remove dropdown arrow, text cursor) */
+.form-group input.form-control[type="text"] {
+    cursor: text;
+    background-image: none;
+    padding-right: 20px;
+}
+
+.form-group select:hover,
+.form-group input.form-control[type="text"]:hover {
     border-color: #e10600;
     box-shadow: 0 6px 12px rgba(225, 6, 0, 0.2);
     transform: translateY(-2px);
 }
 
-.form-group select:focus {
+.form-group select:focus,
+.form-group input.form-control[type="text"]:focus {
     outline: none;
     border-color: #e10600;
     box-shadow: 0 8px 16px rgba(225, 6, 0, 0.3);
